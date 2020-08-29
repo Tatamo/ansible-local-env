@@ -1,13 +1,16 @@
-- name: add a gpg key for VSCode
+- name: Add a gpg key for VSCode
   apt_key:
     url: https://packages.microsoft.com/keys/microsoft.asc
     state: present
   become: yes
 
-- name: add a repository
+- name: Add a repository
   apt_repository:
     repo: deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main
+    filename: vscode
+    mode: "0644"
     state: present
+    update_cache: no # run apt update after installing of apt-transport-https
   become: yes 
 
 - name: Install apt-transport-https to access https repository
