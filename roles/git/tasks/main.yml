@@ -1,0 +1,70 @@
+
+- name: Install dependencies
+  apt:
+    name:
+      - dh-autoreconf
+      - libcurl4-gnutls-dev
+      - libexpat1-dev
+      - gettext
+      - libz-dev
+      - libssl-dev
+      - install-info
+      - asciidoc
+      - docbook2x
+    state: present
+  become: yes
+
+- name: Install old git by apt
+  apt:
+    name: git
+    state: present
+  become: yes
+
+- name: Clone or Pull latest git src
+  git:
+    repo: 'git://git.kernel.org/pub/scm/git/git.git'
+    dest: "{{ git_install_prefix }}/src/git"
+  register: git_src
+  become: yes
+
+- name: Uninstall system installed git
+  apt:
+    name: git
+    state: absent
+  become: yes
+
+- name: make configure
+  make:
+    chdir: "{{ git_install_prefix }}/src/git"
+    target: configure
+  become: yes
+  when: git_src.changed
+
+- name: ./configure
+  command: "./configure --prefix={{ git_install_prefix }}"
+  args:
+    chdir: "{{ git_install_prefix }}/src/git"
+  become: yes
+  when: git_src.changed
+
+- name: make all doc info
+  make:
+    chdir: "{{ git_install_prefix }}/src/git"
+    target: "{{ item }}"
+  with_items:
+    - all
+    - doc
+    - info
+  become: yes
+  when: git_src.changed
+
+- name: make install install-doc install-info
+  make:
+    chdir: "{{ git_install_prefix }}/src/git"
+    target: "{{ item }}"
+  with_items:
+    - install
+    - install-doc
+    - install-info
+  become: yes
+  when: git_src.changed
