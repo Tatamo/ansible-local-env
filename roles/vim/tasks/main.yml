@@ -4,7 +4,7 @@
     state: latest
   become: yes
 
-- name: install NeoBundle
+- name: Install NeoBundle
   git:
     repo: 'git://github.com/Shougo/neobundle.vim'
     dest: ~/.vim/bundle/neobundle.vim
