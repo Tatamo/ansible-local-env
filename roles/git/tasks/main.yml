@@ -20,10 +20,11 @@
     state: present
   become: yes
 
-- name: Clone or Pull latest git src
+- name: Clone or Pull latest git release src
   git:
     repo: 'git://git.kernel.org/pub/scm/git/git.git'
     dest: "{{ git_install_prefix }}/src/git"
+    version: maint
   register: git_src
   become: yes
 
