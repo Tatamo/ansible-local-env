@@ -1,0 +1,30 @@
+- name: create temporary file
+  tempfile:
+    state: directory
+    suffix: texlive
+  register: texlive_temp_dir
+
+- name: Download texlive
+  get_url:
+    url: http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
+    dest: "{{ texlive_temp_dir.path }}/install-tl-unx.tar.gz"
+    mode: '0644'
+
+- name: Unarchive texlive
+  unarchive:
+    src: "{{ texlive_temp_dir.path }}/install-tl-unx.tar.gz"
+    dest: "{{ texlive_temp_dir.path }}/"
+    remote_src: yes
+    extra_opts:
+      - --transform
+      - s#^[^/]*#texlive#
+
+- name: copy profile
+  template:
+    src: ../templates/texlive.profile.j2
+    dest: "{{ texlive_temp_dir.path }}/texlive.profile"
+    mode: '0644'
+
+- name: install texlive
+  shell: "{{ texlive_temp_dir.path }}/texlive/install-tl -profile {{ texlive_temp_dir.path }}/texlive.profile -repository http://ftp.jaist.ac.jp/pub/CTAN/systems/texlive/tlnet"
+  become: yes
