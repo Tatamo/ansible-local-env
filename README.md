@@ -8,4 +8,4 @@ $ ansible-playbook -i localhost, -c local site.yml
 
 ---
 
-(just for Debian Buster)
+(just for Debian Buster and Bullseye)
